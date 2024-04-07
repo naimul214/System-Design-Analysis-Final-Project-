@@ -1,6 +1,7 @@
 import easyocr
 import os
 import time
+import re
 
 def rename_image(image, detected_text):
     """
@@ -27,6 +28,7 @@ def rename_image(image, detected_text):
     if os.path.exists(new_image_path):
         # If the filename already exists, add a suffix to make it unique
         new_filename = f"{license_plate}_{timestamp}_1.jpg"
+        new_filename = re.sub(r'[^\w]', ' ', new_filename)
         new_image_path = os.path.join(save_directory, new_filename)
 
     # Rename the image file
@@ -34,7 +36,7 @@ def rename_image(image, detected_text):
 
     return new_filename
 
-def read_image(image):
+def read_image(image_path):
     """
     Opens an image file and reads the text using OCR.
     """
@@ -42,7 +44,7 @@ def read_image(image):
     reader = easyocr.Reader(['en'])  # Specify language(s)
 
     # Read text from the image
-    text_data = reader.readtext(image)
+    text_data = reader.readtext(image_path)
 
     # Convert all detected text to a single string
     detected_text = ' '.join([result[1] for result in text_data])
@@ -51,6 +53,6 @@ def read_image(image):
     detected_text = detected_text.replace('ONTARIO', '')
 
     # Rename the image file based on the detected text
-    renamed_filename = rename_image(image, detected_text)
+    renamed_filename = rename_image(image_path, detected_text)
 
     return detected_text

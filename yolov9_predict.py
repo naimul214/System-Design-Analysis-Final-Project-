@@ -6,15 +6,13 @@ import time
 import os
 import zipfile
 
-def yolo_predict(model_path, image_path, confidence_threshold=0.5):
+def yolo_predict(model_path, image_path):
     """
     Performs license plate detection using a YOLOv9 model and performs OCR on the cropped image.
 
     Args:
         model_path (str): Path to the YOLOv9 model weights file.
         image_path (str): Path to the image containing the license plate.
-        confidence_threshold (float, optional): Minimum confidence score for license plate detections. Defaults to 0.5.
-
     Returns:
         str: The extracted license plate text, or None if no valid detections are found.
     """
@@ -25,6 +23,10 @@ def yolo_predict(model_path, image_path, confidence_threshold=0.5):
 
     # Perform object detection
     results = model(image_path)
+
+    if results[0].boxes.xyxy.shape[0] == 0:  # Check for empty detection results (no license plate detected)
+        print(f"No license plate detected in image {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        return None
 
     # Crop the image with the highest confidence bounding box
     cropped_image_path = crop_image(results, image_path)
