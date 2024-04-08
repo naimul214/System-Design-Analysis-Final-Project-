@@ -14,6 +14,9 @@ def rename_image(image, detected_text):
     timestamp = str(time.time()).replace('.', '')  # Convert timestamp to string
     new_filename = f"{license_plate}_{timestamp}.jpg"
 
+    # Apply regex to remove symbols from the filename
+    new_filename = re.sub(r'[^\w]', ' ', new_filename)
+
     # Directory to save renamed image
     save_directory = 'cropped_plates'
 
@@ -23,13 +26,6 @@ def rename_image(image, detected_text):
 
     # Path to the new image file
     new_image_path = os.path.join(save_directory, new_filename)
-
-    # Check if the new filename already exists
-    if os.path.exists(new_image_path):
-        # If the filename already exists, add a suffix to make it unique
-        new_filename = f"{license_plate}_{timestamp}_1.jpg"
-        new_filename = re.sub(r'[^\w]', ' ', new_filename)
-        new_image_path = os.path.join(save_directory, new_filename)
 
     # Rename the image file
     os.rename(image, new_image_path)
@@ -50,7 +46,7 @@ def read_image(image_path):
     detected_text = ' '.join([result[1] for result in text_data])
 
     # Remove the word 'ontario' if it appears in the string
-    detected_text = detected_text.replace('ONTARIO', '')
+    detected_text = detected_text.upper().replace('ONTARIO', '')
 
     # Rename the image file based on the detected text
     renamed_filename = rename_image(image_path, detected_text)
