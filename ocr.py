@@ -45,8 +45,11 @@ def read_image(image_path):
     # Convert all detected text to a single string
     detected_text = ' '.join([result[1] for result in text_data])
 
-    # Remove the word 'ontario' if it appears in the string
-    detected_text = detected_text.upper().replace('ONTARIO', '')
+    
+    # Remove specific phrases if they appear in the string
+    phrases_to_remove = ['ONTARIO', 'ONTARIQ', 'YOURS TO DISCOVER', 'A PLACE TO GROW']
+    for phrase in phrases_to_remove:
+        detected_text = detected_text.upper().replace(phrase.upper(), '')
 
     # Rename the image file based on the detected text
     renamed_filename = rename_image(image_path, detected_text)
